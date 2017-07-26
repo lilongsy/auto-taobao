@@ -11,20 +11,21 @@ from config import Config
 from lib.ProxyIp import ProxyIp
 import time
 import os
+import sys
+import traceback
 
 
 class Main(object):
     def __init__(self):
         self.path = os.path.split(os.path.realpath(__file__))[0]
-        self.enable_proxy = False
-        self.wait_time = 5
+        self.enable_proxy = True
+        self.wait_time = 10
         self.detail_total = 4  # visit 4 detail page
 
     def get_driver(self):
         executable_path = executable_path="%s/bin/chromedriver.exe" % self.path
         if self.enable_proxy:
-            ip = {'Ip': '127.0.0.1', 'Port': 1080}
-            proxy = '%s:%s' % (ip['Ip'], ip['Port'])
+            proxy = ProxyIp().get_proxy_ips()
             chromeOptions = webdriver.ChromeOptions()
             chromeOptions.add_argument('--proxy-server=%s' % proxy)
             print 'Proxy:%s' % proxy
@@ -48,7 +49,9 @@ class Main(object):
         self.scroll(dv)
         if not self.exist(dv, sp):
             print u'点击搜索下一页'
-            dv.find_element_by_partial_link_text(u'下一页').click()
+            pos = dv.find_element_by_partial_link_text(u'下一页').location_once_scrolled_into_view
+            self.scroll_to(dv, pos)  # scroll to position
+            WebDriverWait(dv, self.wait_time).until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, u'下一页'))).click()
             self.next_page(dv, kw, sp)
         else:
             print u'此页有要找的宝贝！'
@@ -64,13 +67,14 @@ class Main(object):
                     print u'这不是本店！'
                     continue
                 except Exception as e:
-                    # print e
+                    self.log(e)
                     continue
 
     def detail(self, dv, i):
         self.scroll(dv)
         WebDriverWait(dv, self.wait_time).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.tshop-pbsm-shop-item-recommend')))
+        time.sleep(60)
         dv.find_element_by_xpath(
             '//div[@class="skin-box tb-module tshop-pbsm tshop-pbsm-shop-item-recommend"]'
             '/div[@class="skin-box-bd"]/div[%s]' % i).click()
@@ -87,16 +91,26 @@ class Main(object):
 
     @staticmethod
     def scroll(dv):
-        dv.execute_script("window.scrollBy(0, 700)")
-        time.sleep(2)
-        dv.execute_script("window.scrollBy(0, 700)")
-        time.sleep(2)
-        dv.execute_script("window.scrollBy(0, document.body.scrollHeight)")
+        for i in range(0, 5):
+            dv.execute_script("window.scrollBy(0, 1000)")
+            time.sleep(2)
+        # dv.execute_script("window.scrollBy(0, document.body.scrollHeight)")
+
+    @staticmethod
+    def scroll_to(dv, pos):
+        if pos is not None:
+            dv.execute_script("window.scrollBy(%s, %s)" % (pos['x'], pos['y']))
+
 
     @staticmethod
     def switch_current(dv):
         for h in dv.window_handles:
             dv.switch_to.window(h)
+
+    @staticmethod
+    def log(e):
+        print repr(e)
+        print traceback.print_exc()
 
     def main(self):
         for shop in Config.shops:
@@ -108,7 +122,7 @@ class Main(object):
                     for i in range(1, self.detail_total + 1):
                         self.detail(driver, i)
                 except Exception as e:
-                    print e
+                    self.log(e)
                 finally:
                     driver.quit()
 

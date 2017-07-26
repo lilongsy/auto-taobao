@@ -15,18 +15,13 @@ class ProxyIp(object):
     # Get latest proxy ip and download to json
     def get_proxy_ips(self):
         print 'Update Ip'
-        url = 'http://dec.ip3366.net/api/?key=20170724181031402&getnum=30&anonymoustype=3&area=1&formats=2&proxytype=1'
+        url = 'http://api.ip.data5u.com/dynamic/get.html?order=bf6d5d6ca7961a7ad5a514cbc1783cd2&random=true&sep=3'
         req = urllib2.Request(url)
         response = urllib2.urlopen(req)
-        js = json.loads(response.read().decode('gbk').encode('utf-8'))
-
-        ls = []
-        for j in js:
-            if self.is_enable(j['Ip'], j['Port']):
-                ls.append({'Ip': j['Ip'], 'Port': j['Port']})
-                return ls
-            else:
-                print 'Failed Ip %s:%s' % (j['Ip'], j['Port'])
+        res = response.read().strip('\n')
+        # js = json.loads(response.read().decode('gbk').encode('utf-8'))
+        ips = res.split("\n");
+        return ips[0]
 
     @staticmethod
     def is_open(ip, port):
