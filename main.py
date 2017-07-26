@@ -24,9 +24,9 @@ for ip in ips:
                 chromeOptions = webdriver.ChromeOptions()
                 chromeOptions.add_argument('--proxy-server=%s' % proxy)
                 print 'Proxy:%s' % proxy
-                driver = webdriver.Chrome(executable_path="%s/chromedriver.exe" % path, chrome_options=chromeOptions)
+                driver = webdriver.Chrome(executable_path="%s/bin/chromedriver.exe" % path, chrome_options=chromeOptions)
             else:
-                driver = webdriver.Chrome(executable_path="%s/chromedriver.exe" % path)
+                driver = webdriver.Chrome(executable_path="%s/bin/chromedriver.exe" % path)
             driver.maximize_window()
             print 'Index Page %s' % shop
             driver.get("http://www.taobao.com")
