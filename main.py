@@ -50,8 +50,9 @@ class Main(object):
         if not self.exist(dv, sp):
             print u'点击搜索下一页'
             pos = dv.find_element_by_partial_link_text(u'下一页').location_once_scrolled_into_view
-            self.scroll_to(dv, pos)  # scroll to position
-            WebDriverWait(dv, self.wait_time).until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, u'下一页'))).click()
+            #self.scroll_to(dv, pos)  # scroll to position
+            WebDriverWait(dv, self.wait_time).until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, u'下一页')))
+            dv.find_element_by_partial_link_text(u'下一页').click()
             self.next_page(dv, kw, sp)
         else:
             print u'此页有要找的宝贝！'
