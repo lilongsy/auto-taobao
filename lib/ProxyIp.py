@@ -15,7 +15,7 @@ class ProxyIp(object):
     # Get latest proxy ip and download to json
     def get_proxy_ips(self):
         print 'Update Ip'
-        url = 'http://api.ip.data5u.com/dynamic/get.html?order=bf6d5d6ca7961a7ad5a514cbc1783cd2&random=true&sep=3'
+        url = 'http://api.ip.data5u.com/dynamic/get.html?order=bf6d5d6ca7961a7ad5a514cbc1783cd2&sep=3'
         req = urllib2.Request(url)
         response = urllib2.urlopen(req)
         res = response.read().strip('\n')
