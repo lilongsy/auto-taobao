@@ -18,7 +18,7 @@ import traceback
 class Main(object):
     def __init__(self):
         self.path = os.path.split(os.path.realpath(__file__))[0]
-        self.enable_proxy = True
+        self.enable_proxy = False
         self.wait_time = 10
         self.detail_total = 4  # visit 4 detail page
 
